@@ -1,6 +1,6 @@
 # Veritas – LLM Hallucination Verification Engine
 
-Veritas is an AI-powered verification platform that improves the transparency of Large Language Model (LLM) responses by decomposing generated answers into atomic factual claims and verifying each claim against a user-provided source document using structured Gemini-based reasoning. The application highlights supported and unsupported claims, provides evidence references, confidence scores, and summary verification metrics.
+Veritas is an AI-powered verification platform that improves the transparency of Large Language Model (LLM) responses by decomposing generated answers into atomic factual claims and verifying each claim against a user-provided source document using structured Gemini-based reasoning. The application highlights supported and unsupported claims, provides supporting evidence, confidence scores, and summary verification metrics.
 
 ---
 
@@ -35,13 +35,13 @@ User uploads source document
 ↓
 User asks question
 ↓
-Gemini generates answer
+Gemini generates an answer
 ↓
-Gemini decomposes answer into atomic factual claims
+Gemini decomposes the answer into atomic factual claims
 ↓
 Gemini verifies each claim against the source document
 ↓
-Frontend displays supported/unsupported claims with evidence, confidence scores, and summary metrics
+Frontend displays supported/unsupported claims with supporting evidence, confidence scores, and summary verification metrics
 ```
 
 1. **Document & Question Submission**: The user submits a source document and a specific question via the React interface.
@@ -154,7 +154,7 @@ Returns system status and verification engine identifier.
   ```
 
 ### `POST /api/analyze`
-Generates an answer from the provided source document, decomposes the response into atomic factual claims, verifies each claim against the source document using structured Gemini reasoning, and returns schema-validated verification results.
+Generates an answer from the supplied source document, decomposes the response into atomic factual claims, verifies each claim against the source document using structured Gemini reasoning, and returns schema-validated verification results.
 - **Request Body**:
   ```json
   {
@@ -266,11 +266,11 @@ Uses Gemini's Google Search grounding capability to retrieve additional supporti
 
 ## Limitations
 
-- **Structured Gemini Reasoning**: Claim verification currently relies on structured Gemini reasoning rather than a separate, independent NLI model.
-- **No Independent NLI Model**: The project does not currently use an independent Natural Language Inference model (such as RoBERTa-MNLI or DeBERTa-v3).
-- **Context Window Limits**: Large source documents are limited by the Gemini context window.
-- **In-Memory Audit History**: Audit history is currently stored only in memory and resets upon page reload.
-- **Supplementary Grounding**: Google Search grounding is optional and intended as supplementary evidence.
+- **Structured Gemini Reasoning**: Claim verification currently relies on structured Gemini reasoning.
+- **No Independent NLI Model**: The project does not use an independent Natural Language Inference (NLI) model (such as RoBERTa-MNLI or DeBERTa-v3).
+- **Context Window Limits**: Large documents are limited by Gemini's context window.
+- **In-Memory Audit History**: Audit history is stored only in memory and resets upon page reload.
+- **Supplementary Grounding**: Google Search grounding provides supplementary evidence only.
 
 ---
 
@@ -278,9 +278,9 @@ Uses Gemini's Google Search grounding capability to retrieve additional supporti
 
 The following capabilities are planned enhancements and are **NOT** part of the current implementation:
 
-- **Independent NLI Models**: Integrating local or hosted cross-encoder NLI models (RoBERTa-MNLI / DeBERTa-v3) for independent verification.
-- **Retrieval-Augmented Verification**: Implementing document chunking, embeddings, and vector similarity search (FAISS / local vector DB) for large documents.
+- **Independent NLI Models**: RoBERTa-MNLI / DeBERTa integration for independent verification.
+- **Retrieval-Augmented Verification (RAG)**: Document chunking, embeddings, and vector similarity search (FAISS / vector database).
 - **File Parsing Support**: Adding PDF, DOCX, and OCR parsing capabilities.
-- **Persistent Database**: Adding PostgreSQL or SQLite storage for historical audit persistence.
+- **Persistent Database**: Historical audit persistence using a persistent database.
 - **Inline Citation Highlighting**: Direct UI highlighting of matching source evidence within the document viewer.
 - **Multi-LLM Benchmarking**: Comparing verification outputs across multiple LLM providers (e.g., GPT, Claude, Gemini).
