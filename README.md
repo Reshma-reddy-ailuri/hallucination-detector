@@ -1,6 +1,6 @@
-# Veritas Hallucination Detector
+# Veritas – LLM Hallucination Verification Engine
 
-A web application that detects unsupported or hallucinated claims in LLM-generated responses by comparing them against user-provided source documents using structured Gemini LLM verification.
+Veritas is an AI-powered verification platform that improves the transparency of Large Language Model (LLM) responses by decomposing generated answers into atomic factual claims and verifying each claim against a user-provided source document using structured Gemini-based reasoning. The application highlights supported and unsupported claims, provides evidence references, confidence scores, and summary verification metrics.
 
 ---
 
@@ -8,7 +8,7 @@ A web application that detects unsupported or hallucinated claims in LLM-generat
 
 - **LLM Hallucinations**: Large Language Models frequently generate plausible-sounding statements that lack factual support from provided source contexts or contain factual inaccuracies.
 - **Verification Need**: In document analysis, research, and technical workflows, relying on unverified LLM output poses risks of misinformed decision-making.
-- **Solution**: This application decomposes an AI-generated answer into discrete factual claims and evaluates each claim against the source document using structured JSON output from Gemini, highlighting supported claims with citations and unsupported claims with evidence gap explanations.
+- **Solution**: This application decomposes an AI-generated answer into discrete factual claims and evaluates each claim against the source document using structured JSON output from Gemini, highlighting supported claims with evidence excerpts and unsupported claims with evidence gap explanations.
 
 ---
 
@@ -18,12 +18,12 @@ A web application that detects unsupported or hallucinated claims in LLM-generat
 - **Question Answering & Synthesis**: Generates a targeted response to a question based on the provided document.
 - **Atomic Claim Extraction**: Deconstructs the generated response into 3 to 6 discrete, factual propositions.
 - **Claim Verification**: Evaluates each claim as either `supported` or `unsupported` relative to the source document.
-- **Evidence Gap & Correction Details**: For unsupported claims, provides an explanation of missing or contradicting evidence along with a proposed ground-truth correction.
-- **Citation Display**: For supported claims, displays verbatim citation quotes extracted from the source document.
-- **Grounded Web Search**: Cross-examines specific claims against live Google Search results using Gemini's Google Search grounding feature.
-- **Summary Metrics & Telemetry**: Displays overall hallucination rate percentage, claim counts (total, supported, unsupported), request latency (ms), and estimated token throughput.
-- **3D Visualization**: Renders an interactive 3D radar chart using Three.js to display evaluation metrics (Factuality, Grounding, Precision, Transparency, Safety).
-- **Audit Timeline & Model Comparison**: Maintains in-memory session history of audit runs and provides a UI view to compare model parameter configurations.
+- **Evidence Gap & Correction Details**: For unsupported claims, provides an explanation of missing or contradicting evidence along with a proposed factual correction.
+- **Citation Display**: For supported claims, displays supporting citations and evidence excerpts from the source document.
+- **Grounded Web Search**: Uses Gemini's Google Search grounding capability to retrieve additional supporting information from trusted web sources for selected claims.
+- **Summary Verification Metrics**: Displays overall hallucination rate percentage, claim counts (total, supported, unsupported), request latency (ms), and estimated token throughput.
+- **3D Dashboard Visualization**: Renders an interactive 3D radar chart using Three.js to display verification metrics (Factuality, Grounding, Precision, Transparency, Safety).
+- **Audit Timeline & Verification Comparison**: Maintains in-memory session history of audit runs and provides a UI view for verification comparison across parameters.
 - **Structured JSON Schema**: Enforces schema-validated outputs from the Gemini API (`@google/genai`) to guarantee reliable parsing.
 
 ---
@@ -31,33 +31,24 @@ A web application that detects unsupported or hallucinated claims in LLM-generat
 ## System Workflow
 
 ```
-[User Document + Question]
-         │
-         ▼
-[Express Backend (/api/analyze)]
-         │
-         ▼
-[Gemini 3.6 Flash API Call]
-  - Prompt: Synthesize answer & deconstruct into atomic claims
-  - Response Schema: JSON (synthesis, claims array with status & citations)
-         │
-         ▼
-[Claim Classification & Metrics Calculation]
-  - Filter supported vs. unsupported claims
-  - Calculate hallucination rate (%) & latency telemetry
-         │
-         ▼
-[React 19 Frontend Display]
-  - Render synthesis text & claim breakdown cards
-  - Render Three.js 3D metrics radar chart
-  - Trigger optional Grounded Web Search (/api/grounding-search)
+User uploads source document
+↓
+User asks question
+↓
+Gemini generates answer
+↓
+Gemini decomposes answer into atomic factual claims
+↓
+Gemini verifies each claim against the source document
+↓
+Frontend displays supported/unsupported claims with evidence, confidence scores, and summary metrics
 ```
 
 1. **Document & Question Submission**: The user submits a source document and a specific question via the React interface.
-2. **Backend Processing**: The Express server forwards the prompt to `gemini-3.6-flash` configured with a strict JSON response schema.
+2. **Backend Processing**: The Express server forwards the request to `gemini-3.6-flash` configured with a strict JSON response schema.
 3. **Synthesis & Claim Deconstruction**: Gemini generates an answer and splits it into discrete atomic claims.
-4. **Verification & Citation Mapping**: Gemini evaluates each claim against the source text, returning status (`supported` / `unsupported`), citations for supported claims, and evidence gap explanations for unsupported claims.
-5. **UI Rendering**: The frontend displays the synthesized response, color-coded claim breakdown cards, hallucination rate gauges, 3D radar visualization, and optional live web grounding search.
+4. **Verification & Evidence Mapping**: Gemini evaluates each claim against the source text, returning status (`supported` / `unsupported`), supporting citations for supported claims, and evidence gap explanations for unsupported claims.
+5. **UI Rendering**: The frontend displays the synthesized response, color-coded claim breakdown cards, hallucination rate gauges, 3D radar visualization, and optional web search grounding.
 
 ---
 
@@ -102,10 +93,10 @@ graph TD
 ### Frontend
 - **React 19**: User interface framework.
 - **TypeScript 5.8**: Type safety across components and data types.
-- **TailwindCSS 4**: UI styling and dark theme glassmorphism design.
+- **TailwindCSS 4**: UI styling and dark theme design system.
 - **Three.js**: 3D WebGL radar chart rendering.
-- **Lucide React**: UI icons.
-- **Motion**: Component transitions.
+- **Lucide React**: UI icon library.
+- **Motion**: Component transitions and animations.
 
 ### Backend
 - **Express 4.21**: Node.js web server.
@@ -114,7 +105,7 @@ graph TD
 - **`tsx`**: TypeScript execution for Node.js.
 
 ### Build & Tooling
-- **Vite 6.2**: Frontend development server and bundling.
+- **Vite 6.2**: Frontend development server and bundler.
 - **ESBuild**: Server bundling for production.
 
 ---
@@ -136,9 +127,9 @@ hallucination-detector/
 │   ├── types.ts                 # TypeScript interfaces for API & UI state
 │   ├── components/
 │   │   ├── AuditView.tsx        # Main audit workspace (document input & results)
-│   │   ├── CompareView.tsx      # Model benchmarking UI view
+│   │   ├── CompareView.tsx      # Analysis comparison UI view
 │   │   ├── TimelineView.tsx     # Session audit history list
-│   │   ├── SettingsView.tsx     # Forensic level & configuration controls
+│   │   ├── SettingsView.tsx     # Verification sensitivity controls
 │   │   ├── ThreeRadarChart.tsx  # Three.js 3D WebGL radar chart component
 │   │   ├── HallucinationPopover.tsx # Web grounding search popover component
 │   │   ├── TopAppBar.tsx        # Top navigation header
@@ -153,17 +144,17 @@ hallucination-detector/
 ## API Endpoints
 
 ### `GET /api/health`
-Returns system status and engine version string.
-- **Response**:
+Returns system status and verification engine identifier.
+- **Response Body**:
   ```json
   {
     "status": "ok",
-    "engine": "Veritas NLI 4.2 Core"
+    "engine": "Veritas Verification Engine"
   }
   ```
 
 ### `POST /api/analyze`
-Deconstructs and verifies an LLM answer against a source document.
+Generates an answer from the provided source document, decomposes the response into atomic factual claims, verifies each claim against the source document using structured Gemini reasoning, and returns schema-validated verification results.
 - **Request Body**:
   ```json
   {
@@ -182,7 +173,7 @@ Deconstructs and verifies an LLM answer against a source document.
         "text": "Claim statement text",
         "status": "supported",
         "confidence": 95,
-        "citation": "Verbatim quote from source"
+        "citation": "Supporting citation quote from source"
       },
       {
         "id": "claim-2",
@@ -206,10 +197,9 @@ Deconstructs and verifies an LLM answer against a source document.
     }
   }
   ```
-> *Note: If `GEMINI_API_KEY` is unconfigured, this endpoint returns deterministic mock audit data for demonstration purposes.*
 
 ### `POST /api/grounding-search`
-Cross-examines a claim against live Google Search results.
+Uses Gemini's Google Search grounding capability to retrieve additional supporting information from trusted web sources for selected claims.
 - **Request Body**:
   ```json
   {
@@ -233,8 +223,8 @@ Cross-examines a claim against live Google Search results.
 *(Include project screenshots here)*
 
 - **Main Audit Dashboard**: `![Audit Dashboard](./assets/dashboard_preview.png)`
-- **Claim Breakdown & Citations**: `![Claim Breakdown](./assets/claims_preview.png)`
-- **3D Metrics Radar Chart**: `![3D Radar Chart](./assets/radar_preview.png)`
+- **Claim Verification Breakdown**: `![Claim Breakdown](./assets/claims_preview.png)`
+- **3D Visualization Dashboard**: `![3D Radar Chart](./assets/radar_preview.png)`
 
 ---
 
@@ -276,18 +266,21 @@ Cross-examines a claim against live Google Search results.
 
 ## Limitations
 
-- **LLM-Based Verification**: Claim extraction and status classification rely on Gemini's structured output generation rather than a separate, dedicated Natural Language Inference (NLI) model.
-- **No Standalone NLI Model**: The project does not currently integrate dedicated NLI architectures (such as RoBERTa-MNLI or DeBERTa-v3).
-- **In-Memory State**: Audit history is maintained in React component state and is reset when the page reloads.
-- **Context Size Limit**: Processing large documents is constrained by standard LLM context window limits and API payload size (`10mb`).
+- **Structured Gemini Reasoning**: Claim verification currently relies on structured Gemini reasoning rather than a separate, independent NLI model.
+- **No Independent NLI Model**: The project does not currently use an independent Natural Language Inference model (such as RoBERTa-MNLI or DeBERTa-v3).
+- **Context Window Limits**: Large source documents are limited by the Gemini context window.
+- **In-Memory Audit History**: Audit history is currently stored only in memory and resets upon page reload.
+- **Supplementary Grounding**: Google Search grounding is optional and intended as supplementary evidence.
 
 ---
 
 ## Future Improvements
 
-The following capabilities are planned for future iterations:
-- **Dedicated NLI Model Integration**: Incorporating local or hosted NLI models (e.g., DeBERTa-v3-large-MNLI) to perform cross-encoder entailment checks independently of the primary LLM.
-- **Vector Embeddings & RAG**: Implementing document chunking, embeddings, and vector similarity search (e.g., FAISS or local vector DB) for large document handling.
-- **Document Parsing**: Adding support for PDF, DOCX, and OCR file uploads.
-- **Persistent Database**: Adding PostgreSQL or SQLite database storage for audit history persistence.
-- **Inline Highlight Rendering**: Directly highlighting supporting citations or contradicting text within the original document UI view.
+The following capabilities are planned enhancements and are **NOT** part of the current implementation:
+
+- **Independent NLI Models**: Integrating local or hosted cross-encoder NLI models (RoBERTa-MNLI / DeBERTa-v3) for independent verification.
+- **Retrieval-Augmented Verification**: Implementing document chunking, embeddings, and vector similarity search (FAISS / local vector DB) for large documents.
+- **File Parsing Support**: Adding PDF, DOCX, and OCR parsing capabilities.
+- **Persistent Database**: Adding PostgreSQL or SQLite storage for historical audit persistence.
+- **Inline Citation Highlighting**: Direct UI highlighting of matching source evidence within the document viewer.
+- **Multi-LLM Benchmarking**: Comparing verification outputs across multiple LLM providers (e.g., GPT, Claude, Gemini).

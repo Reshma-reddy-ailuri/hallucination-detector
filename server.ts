@@ -27,7 +27,7 @@ function getGenAI() {
 
 // API Health
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', engine: 'Veritas NLI 4.2 Core' });
+  res.json({ status: 'ok', engine: 'Veritas Verification Engine' });
 });
 
 // Forensic LLM Response Audit Endpoint
